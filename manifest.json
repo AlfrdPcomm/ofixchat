@@ -22,7 +22,8 @@
     "docs": "0.x"
   },
   "dependencies": {
-    "vtex.pixel-interfaces": "1.x"
+    "vtex.pixel-interfaces": "1.x",
+    "vtex.styleguide": "9.x"
   },
   "settingsSchema": {
     "title": "YOUR APP NAME",
