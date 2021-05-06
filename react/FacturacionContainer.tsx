@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react'
 import { Input, Button, Dropdown, Alert  } from 'vtex.styleguide'
-
 import styles from './styles.css'
 
 
@@ -12,7 +11,9 @@ function FacturacionContainer({handleChangeBilling,
                               handleChangeForm,
                               handleChangeFormaPago,
                               handleChangeUsoCFDI,
-                              closeNotification
+                              closeNotification,
+                              seleccionarEstado,
+                              verState
                             }: {
                                 handleChangeBilling: any,
                                 // handleChangeEstado: any,
@@ -20,11 +21,15 @@ function FacturacionContainer({handleChangeBilling,
                                 handleChangeForm:any,
                                 handleChangeFormaPago: any,
                                 handleChangeUsoCFDI: any,
-                                closeNotification: any
+                                closeNotification: any,
+                                seleccionarEstado : any,
+                                verState : any
                               } ){
 
   return(
     <Fragment>
+
+
 
 
       <div className={styles.facturacionContainer}>
@@ -37,6 +42,8 @@ function FacturacionContainer({handleChangeBilling,
           </Alert><br /></>
             : null
         }
+
+         <button onClick={verState}>Ver state</button>
 
         <form autoComplete="off" className={styles.formContainer}>
         {/* <form > */}
@@ -94,7 +101,14 @@ function FacturacionContainer({handleChangeBilling,
               <Input placeholder="Ciudad" size="small" name="ciudad" value={state.Form.ciudad}  onChange={handleChangeForm}/>
             </div>
             <div className={styles.inTwo}>
-              <Input placeholder="Estado" size="small" name="estado" value={state.Form.estado}  onChange={handleChangeForm}/>
+              {/* <Input placeholder="Estado" size="small" name="estado" value={state.Form.estado}  onChange={handleChangeForm}/> */}
+              <Dropdown
+                size="small"
+                value={state.Form.estado}
+                options={state.dropdownEstados}
+                onChange={(_ : any, v : any) => seleccionarEstado({ seleccion: v })}
+              />
+
             </div>
           </div>
 
