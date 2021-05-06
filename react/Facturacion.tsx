@@ -1,5 +1,6 @@
 import  React, { Component} from 'react'
 import FacturacionContainer from './FacturacionContainer'
+import { AppKey, AppToken } from './keys'
 
 interface IMyObject {
   value: string;
@@ -52,6 +53,7 @@ interface IState {
   errorRFC : string,
   isLoading : boolean;
   showNotification: boolean;
+  dropdownEstados: any;
 }
 
 var baseURL = 'http://localhost/roga/facturama-php-sdk/';
@@ -74,6 +76,9 @@ class Facturacion extends Component<IState, IState>{
     this.handleChangeUsoCFDI = this.handleChangeUsoCFDI.bind(this)
     this.handleChangeButton = this.handleChangeButton.bind(this)
     this.closeNotification = this.closeNotification.bind(this)
+    this.obtenerEstados = this.obtenerEstados.bind(this)
+    this.seleccionarEstado = this.seleccionarEstado.bind(this)
+    this.verState = this.verState.bind(this)
 
     this.state = {
       optionsCFDI :[],
@@ -112,18 +117,67 @@ class Facturacion extends Component<IState, IState>{
       },
       errorRFC: '',
       isLoading : false,
-      showNotification : false
+      showNotification : false,
+      dropdownEstados : []
     }
 
     setTimeout(() => {
       this.getFormaPago();
+      this.obtenerEstados();
     }, 1000);
+
 
 
   }
 
 
+  verState(){
+    console.log(this.state)
+  }
 
+  async obtenerEstados(){
+
+    var estados : any = null
+    try {
+      var url = "/api/dataentities/Estados/search?_fields=_all&_schema=mdv1"
+      let config = {
+        method: 'GET',
+        headers:{
+          'Accept' : 'application/json',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin' : '*',
+          'X-VTEX-API-AppKey': AppKey,
+          'X-VTEX-API-AppToken': AppToken
+        },
+      }
+      let res = await fetch(url, config)
+      estados = await res.json()
+
+    } catch (error) {
+      console.log('Ocurrio un error al obtener estados', error)
+      return false;
+    }
+
+    if(estados == null){
+      alert('Ocurrio un error al obtener estados')
+      return false
+    }
+
+    for (let i = 0; i < estados.length; i++) {
+      let data: any = {}
+      data = {
+        "value": estados[i].codEstado,
+        "label": estados[i].estado
+      };
+
+      await this.setState({
+        dropdownEstados : this.state.dropdownEstados?.concat(data)
+      })
+    }
+    console.log(this.state)
+    return true
+
+  }
 
   async handleChangeBilling():Promise<any|boolean>{
 
@@ -613,6 +667,17 @@ class Facturacion extends Component<IState, IState>{
 }
 
 
+async seleccionarEstado(estadoSeleccionado : any){
+  this.setState({
+    Form : {
+      ...this.state.Form,
+      estado : estadoSeleccionado.seleccion
+    }
+    
+  })
+}
+
+
   render(){
 		return <FacturacionContainer
               handleChangeBilling={this.handleChangeBilling}
@@ -622,6 +687,8 @@ class Facturacion extends Component<IState, IState>{
               handleChangeFormaPago={this.handleChangeFormaPago}
               handleChangeUsoCFDI = {this.handleChangeUsoCFDI}
               closeNotification = {this.closeNotification}
+              seleccionarEstado = {this.seleccionarEstado}
+              verState = {this.verState}
             />
 	}
 
