@@ -35,19 +35,18 @@ interface IState {
   Form: {
     numeroPedido: string,
     razonSocial : string,
-    correo : string,
     rfc : string,
-    calle : string,
+    correo : string,
     telefono : string,
-    estado : string,
+    calle : string,
     numero : string,
+    BetweenStreets : string
     codigoPostal : string,
     colonia: string,
     ciudad: string,
+    estado : string,
     usoCFDI : string,
     formaPago: string,
-    BetweenStreets : string
-
   };
   errorRFC : string,
   isLoading : boolean;

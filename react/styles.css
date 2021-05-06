@@ -1,0 +1,95 @@
+.facturacionContainer {
+  width: 90%!important;
+  margin: 1rem 0;
+}
+
+.h3 {
+  text-align: center;
+}
+
+.disclosure {
+  text-align: center;
+  font-size: 14px;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.formContainer input {
+  color: #194681;
+}
+
+.numPedido {
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 479px) {
+  .numPedido {
+    width: 49%;
+  }
+}
+
+@media (min-width: 479px) {
+  .idTwo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.inTwo {
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 479px) {
+  .inTwo {
+    width: 49%;
+  }
+}
+
+.inThree {
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 479px) {
+  .inThree {
+    width: 49%;
+  }
+  .idThree {
+    width: 49%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.butContainer {
+  margin: 2rem 0;
+}
+
+@media (min-width: 479px) {
+  .butContainer button {
+    width: 49%;
+    background-color: #194681;
+    border: 1px solid #194681;
+  }
+  .butContainer {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.butContainer button {
+  background-color: #194681;
+  border: 1px solid #194681;
+}
+
+.butContainer button:hover {
+  background-color: #194681;
+  border: 1px solid #194681;
+}
+
