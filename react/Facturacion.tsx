@@ -56,12 +56,6 @@ interface IState {
   dropdownEstados: any;
 }
 
-var baseURL = 'http://localhost/roga/facturama-php-sdk/';
-// var baseURL = 'https://villarrealmuebles.com/facturacion.villarrealmuebles.com/facturacion/';
-
-
-
-
 class Facturacion extends Component<IState, IState>{
 
 
@@ -124,10 +118,8 @@ class Facturacion extends Component<IState, IState>{
     setTimeout(() => {
       this.getFormaPago();
       this.obtenerEstados();
+      this.getUsoCFDI();
     }, 1000);
-
-
-
   }
 
 
@@ -136,7 +128,6 @@ class Facturacion extends Component<IState, IState>{
   }
 
   async obtenerEstados(){
-
     var estados : any = null
     try {
       var url = "/api/dataentities/Estados/search?_fields=_all&_schema=mdv1"
@@ -185,6 +176,8 @@ class Facturacion extends Component<IState, IState>{
         return false;
     }
 
+
+
     this.setState({
       isLoading : true
     })
@@ -199,13 +192,14 @@ class Facturacion extends Component<IState, IState>{
           'Accept' : 'application/json',
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin' : '*',
-          'X-VTEX-API-AppKey': 'vtexappkey-rogamx-SPTEXM',
-          'X-VTEX-API-AppToken': 'KHRFJNZDDPHICONZBLATTGYTNMJEGDHNGDYKLHRMFFUFZGEBEIMKFHCDIXSXDUXZHTBYQCNUUOOOLSUGIHAXRWIZBUBNPTILHVXFEFKCURQQTNRQDLPVUZHLLCWVBAEA'
+          'X-VTEX-API-AppKey': AppKey,
+          'X-VTEX-API-AppToken': AppToken
         },
       }
       let res = await fetch(url, config)
       orden = await res.json()
     } catch (error) {
+      alert('Ocurrio un error al momento de procesar los datos')
       console.log(error);
       this.setState({isLoading : false})
       return false;
@@ -213,30 +207,10 @@ class Facturacion extends Component<IState, IState>{
 
 
     if(orden.error){
-      alert('No se encontro el numero de orden,   ')
+      alert('Orden no encontrada, verifique el numero de orden, ejemplo: 0000000000000-00')
       this.setState({isLoading : false})
       return false
     }
-
-
-    let data: any = {}
-    data = {
-      "Name": this.state.Form.razonSocial,
-      "CfdiUse": this.state.Form.usoCFDI,
-      "Rfc": this.state.Form.rfc,
-      "CfdiType": "I",
-      "NameId": 1,
-      "ExpeditionPlace": this.state.Form.codigoPostal,
-      "PaymentForm": this.state.Form.formaPago,
-      "PaymentMethod": "PUE",
-      "Date": "",
-      "Street": this.state.Form.calle,
-      "Suburb": this.state.Form.colonia,
-      "City": this.state.Form.ciudad,
-      "Items": []
-    };
-
-
 
     var warehouseId = null;
     if(orden.shippingData.logisticsInfo.length > 0){
@@ -258,152 +232,51 @@ class Facturacion extends Component<IState, IState>{
       return false;
     }
 
+    const fecha = new Date();
 
-
-
-    let newCfdi: any = {}
-    newCfdi = {
-      "Receiver": {
-          "Name": this.state.Form.razonSocial,
-          "CfdiUse": this.state.Form.usoCFDI,
-          "Rfc": this.state.Form.rfc
-      },
-      "CfdiType": "I",
-      "NameId": 1,
-      "ExpeditionPlace": this.state.Form.codigoPostal,
-      "PaymentForm": this.state.Form.formaPago,
-      "PaymentMethod": "PUE",
-      "Date": "",
-      "Items": [],
-      "warehouseId" : warehouseId,
+    let data: any = {}
+    data = {
+      "NumeroPedido" : this.state.Form.numeroPedido,
+      "Name": this.state.Form.razonSocial,
+      "Email" : this.state.Form.correo,
+      "PhoneNumber" : this.state.Form.telefono,
+      "CfdiUse": this.state.Form.usoCFDI,
+      "Rfc": this.state.Form.rfc,
+      "PaymentMethod": this.state.Form.formaPago,
+      "Date": fecha,
       "Street": this.state.Form.calle,
+      "AddressNumber" : this.state.Form.numero,
+      "BetweenStreets" : this.state.Form.BetweenStreets,
+      "PostalCode": this.state.Form.codigoPostal,
       "Suburb": this.state.Form.colonia,
-      "City": this.state.Form.ciudad
+      "City": this.state.Form.ciudad,
+      "State" : this.state.Form.estado,
     };
 
-    for (var i = 0; i < orden.items.length; i++) {
 
-      var formatPrice: any;
-
-
-      formatPrice = (orden.items[i].sellingPrice / 100);
-      var subTotalProducto = (orden.items[i]['quantity'] * formatPrice);
-      var precioUnitario = parseFloat(orden.items[i]['sellingPrice']) / 100;
-
-
-
-      // formatPrice = (orden.items[i].sellingPrice / 100).toFixed(2);
-      // var precioUnitarioSinIVA = (formatPrice / 1.16);
-      // var subTotalProductoSinIVA = (orden.items[i]['quantity'] * precioUnitarioSinIVA);
-      // var cantidadIVA = (subTotalProductoSinIVA * 0.16);
-      // var total = subTotalProductoSinIVA + cantidadIVA
-
-
-      let items: any = {}
-      items = {
-          "Quantity": orden.items[i]['quantity'].toString(),
-          // "ProductCode": orden.items[i]['id'].toString(),
-          "ProductCode" : '',
-          "UnitCode": orden.items[i]['measurementUnit'].toString().toUpperCase(),
-          "Description": orden.items[i]['name'].toString(),
-          "IdentificationNumber": orden.items[i]['refId'].toString(),
-          "UnitPrice": precioUnitario.toString(),
-          "Subtotal": subTotalProducto.toString(),
-          "Discount" : '0',
-          // "Taxes": [
-          //   {
-          //       "Name": "IVA",
-          //       "Rate": "0.16",
-          //       "Total": cantidadIVA.toFixed(2).toString(),
-          //       "Base": subTotalProductoSinIVA.toF   ixed(2).toString(),
-          //       "IsRetention": "false"
-          //   }],
-          "Taxes": [],
-          "Total": subTotalProducto.toString()
-      }
-      // var discount = 0;
-      // for (let c = 0; c < orden.items[i]['totals'].length; c++) {
-      //   if(c==1){
-      //     discount = (orden.items[i]['totals'][c]['value'] / 100)
-      //   }
-      // }
-
-      var discount = 0;
-      for (let c = 0; c < orden.items[i]['priceTags'].length; c++) {
-          discount += (orden.items[i]['priceTags'][c]['rawValue'] * -1)
-      }
-      items['Discount'] = discount;
-
-
-
-      if(orden.items[i]['taxCode'] === null || orden.items[i]['taxCode'] === ''){
-        items['ProductCode'] = "56101500";
-      }
-      else{
-        items['ProductCode'] = orden.items[i]['taxCode'];
-      }
-
-      newCfdi.Items.push(items);
-      data.Items.push(items)
-    }
-
-
-    // console.log(newCfdi);
-    // this.setState({isLoading : false, showNotification: false})
-    // return false;
-
-    /*
-    try {
-      var urlMasterData = '/api/dataentities/FacturacionV6/documents?_schema=mdv1';
-      let options3 = {
+   try {
+      var url = '/api/dataentities/FacturacionV2/documents?_schema=mdv1';
+      let config = {
         method: 'PATCH',
-        headers: {
-          Accept: 'application/vnd.vtex.ds.v10+json',
+        headers:{
+          'Accept': 'application/vnd.vtex.ds.v10+json',
           'Content-Type': 'application/json',
-          'X-VTEX-API-AppKey': 'vtexappkey-rogamx-SPTEXM',
-          'X-VTEX-API-AppToken': 'KHRFJNZDDPHICONZBLATTGYTNMJEGDHNGDYKLHRMFFUFZGEBEIMKFHCDIXSXDUXZHTBYQCNUUOOOLSUGIHAXRWIZBUBNPTILHVXFEFKCURQQTNRQDLPVUZHLLCWVBAEA'
+          'X-VTEX-API-AppKey': AppKey,
+          'X-VTEX-API-AppToken': AppToken
         },
         body: JSON.stringify(data)
-      };
-      let response = await fetch(urlMasterData, options3)
-      await response.json()
+      }
+      let res = await fetch(url, config)
+      var response = await res.json()
+      console.log(response)
+
     } catch (error) {
+      alert(error)
       console.log(error);
       this.setState({isLoading : false})
       return false;
     }
 
-    */
-
-
-    try {
-      var url2 = baseURL +'examples/catalogos/CreateCfdiRequest.php';
-      let config2 = {
-        method: 'POST',
-        // headers:{
-        //   'Accept' : 'application/json',
-        //   'Content-Type': 'application/json',
-        //   'Access-Control-Allow-Origin': '*'
-        // },
-        body: JSON.stringify(newCfdi)
-      }
-      var res2 = await fetch(url2, config2)
-      var request = await res2.json();
-
-      if(request.error == true){
-        alert('Error al generar la factura : ' + request.message);
-        this.setState({isLoading : false, showNotification: false })
-        return false;
-      }
-
-      // console.log(request);
-      // console.log(JSON.stringify(request.data));
-    } catch (error) {
-      console.log(error);
-      alert('Error al generar la factura : ' + error)
-      this.setState({isLoading : false, showNotification: false})
-      return false
-    }
     this.FormClean();
     this.setState({isLoading : false, showNotification: true })
     return false;
@@ -424,12 +297,14 @@ class Facturacion extends Component<IState, IState>{
       Form: { ...this.state.Form, [name]: value}
     })
     if(name == 'rfc'){
-      if(this.rfcValido(value) == false){
+      console.log(this.rfcValido(value))
+
+      if(this.rfcValido(value) === false){
         this.setState({ errorRFC : 'Ingresa un RFC valido' })
       }
       else{
         await this.setState({ errorRFC : '' })
-        this.getUsoCFDI(value);
+        // this.getUsoCFDI(value);
       }
     }
   }
@@ -463,31 +338,37 @@ class Facturacion extends Component<IState, IState>{
   }
 
 
-  async getUsoCFDI(rfc: any){
-    // console.log(rfc);
+  async getUsoCFDI(){
+
+    var razonDFI : any = null
     try {
-      var url = baseURL +'examples/catalogos/getUsoCFDI.php?rfc=' + rfc;
+      var url = "/api/dataentities/UsoCFDIV1/search?_fields=_all&_schema=mdv1"
       let config = {
         method: 'GET',
         headers:{
           'Accept' : 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin' : '*',
+          'X-VTEX-API-AppKey': AppKey,
+          'X-VTEX-API-AppToken': AppToken
         },
       }
       let res = await fetch(url, config)
-      let data = await res.json()
-      var razonDFI = data.data;
-      for (var i = 0; i < razonDFI.length; i++) {
-        var obj = [{value: razonDFI[i].Value, label:razonDFI[i].Name}]
-        this.setState({
-          optionsCFDI: this.state.optionsCFDI?.concat(obj)
-        })
-      }
-
+      razonDFI = await res.json()
 
     } catch (error) {
-      console.log(error);
+      console.log('Ocurrio un error al obtener estados', error)
+      return false;
     }
+
+    for (var i = 0; i < razonDFI.length; i++) {
+      var obj = [{value: razonDFI[i].clave, label:razonDFI[i].tipo}]
+      this.setState({
+        optionsCFDI: this.state.optionsCFDI?.concat(obj)
+      })
+    }
+
+    return true
   }
 
 
@@ -500,37 +381,40 @@ class Facturacion extends Component<IState, IState>{
 
   async getFormaPago(){
     var formaPago = [];
+
+
     try {
-      var url = baseURL + 'examples/catalogos/getFormasPago.php';
+      var url = "/api/dataentities/FormasPagoV1/search?_fields=_all"
       let config = {
         method: 'GET',
         headers:{
           'Accept' : 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin' : '*',
+          'X-VTEX-API-AppKey': AppKey,
+          'X-VTEX-API-AppToken': AppToken
         },
       }
       let res = await fetch(url, config)
-      let data = await res.json();
-      formaPago = data.data;
+      formaPago = await res.json()
+
     } catch (error) {
-      console.log(error);
+      console.log('Ocurrio un error al obtener las formas de pago', error)
+      return false;
     }
 
     for (var i = 0; i < formaPago.length; i++) {
-      var obj = [{value: formaPago[i].Value, label:formaPago[i].Name}]
+      var obj = [{value: formaPago[i].codigo, label:formaPago[i].descripcion}]
       await this.setState({
         optionsFormaPago: this.state.optionsFormaPago?.concat(obj)
       })
     }
-    // console.log(this.state.optionsFormaPago);
 
     if(this.state.optionsFormaPago?.length == 0){
       setTimeout(() => {
         this.getFormaPago();
       }, 7000);
     }
-
-
     return false;
 
   }
@@ -562,8 +446,18 @@ class Facturacion extends Component<IState, IState>{
       return false
     }
 
+    if(this.state.Form.telefono === '' || this.state.Form.telefono === null || this.state.Form.telefono == '0'){
+      alert('Ingrese el telefono');
+      return false
+    }
+
     if(this.state.Form.calle === '' || this.state.Form.calle === null){
-      alert('Ingrese la calle y numero')
+      alert('Ingrese la calle')
+      return false
+    }
+
+    if(this.state.Form.numero === '' || this.state.Form.numero === null){
+      alert('Ingrese el numero')
       return false
     }
 
@@ -578,6 +472,11 @@ class Facturacion extends Component<IState, IState>{
       return false
    }
 
+   if(this.state.Form.BetweenStreets === '' || this.state.Form.BetweenStreets === null){
+      alert('Ingresa las entre calles de tu domicilio')
+      return false
+    }
+
     if(this.state.Form.colonia === '' || this.state.Form.colonia === null){
       alert('Ingrese la colonia')
       return false
@@ -588,8 +487,13 @@ class Facturacion extends Component<IState, IState>{
       return false
     }
 
+    if(this.state.Form.estado === '' || this.state.Form.estado === null){
+      alert('Seleccione el estado')
+      return false
+    }
+
     if(this.state.Form.usoCFDI === '' || this.state.Form.usoCFDI === null){
-      alert('Seleccione el uso del CFDI')
+      alert('Seleccione el uso de CFDI')
       return false
     }
 
