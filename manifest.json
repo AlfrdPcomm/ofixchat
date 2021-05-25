@@ -1,10 +1,9 @@
 {
   "name": "ofixchat-app",
   "vendor": "ofixmx",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "title": "ofixchat",
   "description": "Chat para atención tienda Ofix",
-  
   "builders": {
     "react": "3.x",
     "store": "0.x",
