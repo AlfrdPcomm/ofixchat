@@ -130,7 +130,7 @@ class Facturacion extends Component<IState, IState>{
   async obtenerEstados(){
     var estados : any = null
     try {
-      var url = "/api/dataentities/Estados/search?_fields=_all&_schema=mdv1"
+      var url = "/api/dataentities/EstadosV2/search?_fields=_all&_schema=mdv1&_sort=estado%20ASC"
       let config = {
         method: 'GET',
         headers:{
@@ -138,7 +138,8 @@ class Facturacion extends Component<IState, IState>{
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin' : '*',
           'X-VTEX-API-AppKey': AppKey,
-          'X-VTEX-API-AppToken': AppToken
+          'X-VTEX-API-AppToken': AppToken,
+          'REST-Range' : 'resources=0-100'
         },
       }
       let res = await fetch(url, config)
