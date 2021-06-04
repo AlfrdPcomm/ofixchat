@@ -1,20 +1,9 @@
 {
-  "name": "ofixchat-app",
+  "name": "contactapp",
   "vendor": "ofixmx",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "title": "ofixchat",
-  "description": "Chat para atención tienda Ofix",
-  "billingOptions": {
-    "termsURL": "https://compliance.vtex.com/gdpr/policies/vtex-privacy-policy",
-    "support": {
-      "url": "https://support.vtex.com/hc/requests"
-    },
-    "free": true,
-    "type": "free",
-    "availableCountries": [
-      "*"
-    ]
-  },
+  "description": "Chat para atención tienda Ofix antes ofixchat",
   "builders": {
     "react": "3.x",
     "store": "0.x",
