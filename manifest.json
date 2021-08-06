@@ -1,9 +1,9 @@
 {
-  "name": "ofixchat-app",
+  "name": "contactapp",
   "vendor": "ofixmx",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "title": "ofixchat",
-  "description": "Chat para atención tienda Ofix",
+  "description": "Chat para atención tienda Ofix antes ofixchat",
   "builders": {
     "react": "3.x",
     "store": "0.x",
@@ -11,7 +11,8 @@
     "docs": "0.x"
   },
   "dependencies": {
-    "vtex.pixel-interfaces": "1.x"
+    "vtex.pixel-interfaces": "1.x",
+    "vtex.styleguide": "9.x"
   },
   "settingsSchema": {
     "title": "YOUR APP NAME",
