@@ -1,7 +1,7 @@
 {
   "name": "contactapp",
   "vendor": "ofixmx",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "title": "ofixchat",
   "description": "Chat para atención tienda Ofix antes ofixchat",
   "builders": {
